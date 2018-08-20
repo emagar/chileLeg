@@ -1,18 +1,18 @@
 
 # Table of Contents
 
-1.  [Description of *Recent Mexican Election Vote Returns* repository](#org2c40638)
-2.  [Files in the repository and how to cite them](#org775d3e7)
-3.  [Codebook](#orgc493432)
-4.  [Sources](#orgad5607e)
-5.  [Acknowledgements](#orgf5bbe2e)
+1.  [Description of *Recent Mexican Election Vote Returns* repository](#orgb195025)
+2.  [Files in the repository and how to cite them](#orgfd8f214)
+3.  [Codebook](#org560a850)
+4.  [Sources](#org762872c)
+5.  [Acknowledgements](#org74a260c)
 
 Last revision: 2018-06-13
 
 <span class="underline">WORK IN PROGRESS</span>
 
 
-<a id="org2c40638"></a>
+<a id="orgb195025"></a>
 
 # Description of *Recent Mexican Election Vote Returns* repository
 
@@ -24,12 +24,14 @@ Data has been compiled from the congressional web pages <http://camara.cl> and <
 Data inludes \*\*
 
 
-<a id="org775d3e7"></a>
+<a id="orgfd8f214"></a>
 
 # Files in the repository and how to cite them
 
 You are free to download and modify the data (see the LICENSE document for details) provided you give proper credit to this source. 
-Unless otherwise noted next to the file descriptor, the cite is Eric Magar (2018) Legislative bill histories in contemporary Chile repository, <https://github.com/emagar/chile>.
+Unless otherwise noted next to the file descriptor, the cite is Eric Magar (2018) Legislative bill histories in contemporary Chile repository, <https://github.com/emagar/chileLeg>.
+
+edit below&#x2026;
 
 In general, file names identify the office elected (i.e., **df**, **se**, **pr**, **dl**, **go**, **ay** for *diputados federales*, *senadores*, *presidente*, *diputados locales*, *gobernador*, and *ayuntamiento*, respectively), followed by the unit of observation (i.e., **ed**, **df**, **dl**, **mu**, **de**, **se**, **ca** for *estado*, *distrito federal*, *distrito local*, *municipio*, *demarcación*, *sección*, and *casilla* respectively), and the years included. Other than in Nayarit since 2008 (and, pending a court case, Mexico City since 2018), *ayuntamientos* are elected in fused ballots for a *presidente municipal* and a fraction of the municipal council (*regidores* and *síndicos*). Nayarit elects these members of the municipal council in single-member plurality districts called *demarcaciones*.
 
@@ -49,7 +51,7 @@ In general, file names identify the office elected (i.e., **df**, **se**, **pr**
 -   <del>`datosBrutos/` = large directory containing primary sources</del> (dropped from repo due to large size&#x2026; [mail me](mailto:emagar@itam.mx) if you need this).
 
 
-<a id="orgc493432"></a>
+<a id="org560a850"></a>
 
 # Codebook
 
@@ -85,7 +87,7 @@ Most variables are included in every file, some appear in selected files only.
 -   *fake* = indicates fake data for hegemonic era elections, made up of best guesses about what happened in the state's race for the purpose of computing vote lags. Will normally be dropped from analysis.
 
 
-<a id="orgad5607e"></a>
+<a id="org762872c"></a>
 
 # Sources
 
@@ -100,7 +102,7 @@ Work in progress&#x2026;
 -   *Fuente* = voz y voto
 
 
-<a id="orgf5bbe2e"></a>
+<a id="org74a260c"></a>
 
 # Acknowledgements
 
