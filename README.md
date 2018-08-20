@@ -1,18 +1,18 @@
 
 # Table of Contents
 
-1.  [Description of *Recent Mexican Election Vote Returns* repository](#org6723f37)
-2.  [Files in the repository and how to cite them](#org3c5f28f)
-3.  [Codebook](#org125583b)
-4.  [Sources](#orga437611)
-5.  [Acknowledgements](#orgbc08f43)
+1.  [Description of *Recent Mexican Election Vote Returns* repository](#org2c40638)
+2.  [Files in the repository and how to cite them](#org775d3e7)
+3.  [Codebook](#orgc493432)
+4.  [Sources](#orgad5607e)
+5.  [Acknowledgements](#orgf5bbe2e)
 
 Last revision: 2018-06-13
 
 <span class="underline">WORK IN PROGRESS</span>
 
 
-<a id="org6723f37"></a>
+<a id="org2c40638"></a>
 
 # Description of *Recent Mexican Election Vote Returns* repository
 
@@ -24,7 +24,7 @@ Data has been compiled from the congressional web pages <http://camara.cl> and <
 Data inludes \*\*
 
 
-<a id="org3c5f28f"></a>
+<a id="org775d3e7"></a>
 
 # Files in the repository and how to cite them
 
@@ -49,7 +49,7 @@ In general, file names identify the office elected (i.e., **df**, **se**, **pr**
 -   <del>`datosBrutos/` = large directory containing primary sources</del> (dropped from repo due to large size&#x2026; [mail me](mailto:emagar@itam.mx) if you need this).
 
 
-<a id="org125583b"></a>
+<a id="orgc493432"></a>
 
 # Codebook
 
@@ -85,7 +85,7 @@ Most variables are included in every file, some appear in selected files only.
 -   *fake* = indicates fake data for hegemonic era elections, made up of best guesses about what happened in the state's race for the purpose of computing vote lags. Will normally be dropped from analysis.
 
 
-<a id="orga437611"></a>
+<a id="orgad5607e"></a>
 
 # Sources
 
@@ -100,7 +100,7 @@ Work in progress&#x2026;
 -   *Fuente* = voz y voto
 
 
-<a id="orgbc08f43"></a>
+<a id="orgf5bbe2e"></a>
 
 # Acknowledgements
 
