@@ -1,0 +1,78 @@
+# LOAD COMMITTEE CHAIR DATA
+comPres <- read.csv(file = "comisiones1990-2014.csv", stringsAsFactors=FALSE)
+comPres$comision <- gsub(pattern = "^ +(.*) +$", replacement = "\\1", comPres$comision)
+comPres$comision <- gsub(pattern = "Á", replacement = "A", comPres$comision)
+comPres$comision <- gsub(pattern = "É", replacement = "E", comPres$comision)
+comPres$comision <- gsub(pattern = "Í", replacement = "I", comPres$comision)
+comPres$comision <- gsub(pattern = "Ó", replacement = "O", comPres$comision)
+comPres$comision <- gsub(pattern = "Ú", replacement = "U", comPres$comision)
+#
+comPres$comShort <- ""
+comPres$comShort[grep("agricultura", comPres$comision, ignore.case = TRUE)] <- "agricultura"
+comPres$comShort[grep("ciencias*", comPres$comision, ignore.case = TRUE)] <- "ciencia"
+comPres$comShort[grep("constitucion", comPres$comision, ignore.case = TRUE)] <- "constitucion"
+comPres$comShort[grep("cultura y de las artes", comPres$comision, ignore.case = TRUE)] <- "cultura"
+comPres$comShort[grep("defensa", comPres$comision, ignore.case = TRUE)] <- "defensa"
+comPres$comShort[grep("derechos", comPres$comision, ignore.case = TRUE)] <- "ddhh"
+comPres$comShort[grep("desarrollo social,", comPres$comision, ignore.case = TRUE)] <- "desarrollo social"
+comPres$comShort[grep("economia", comPres$comision, ignore.case = TRUE)] <- "economia"
+comPres$comShort[grep("educacion", comPres$comision, ignore.case = TRUE)] <- "educacion"
+comPres$comShort[grep("familia", comPres$comision, ignore.case = TRUE)] <- "familia"
+comPres$comShort[grep("interior", comPres$comision, ignore.case = TRUE)] <- "interior"
+comPres$comShort[grep("hacienda", comPres$comision, ignore.case = TRUE)] <- "hacienda"
+comPres$comShort[grep("mineria", comPres$comision, ignore.case = TRUE)] <- "mineria"
+comPres$comShort[grep("obras", comPres$comision, ignore.case = TRUE)] <- "obras"
+comPres$comShort[grep("pesca,", comPres$comision, ignore.case = TRUE)] <- "pesca"
+comPres$comShort[grep("recursos", comPres$comision, ignore.case = TRUE)] <- "recursos naturales"
+comPres$comShort[grep("relaciones", comPres$comision, ignore.case = TRUE)] <- "rree"
+comPres$comShort[grep("salud", comPres$comision, ignore.case = TRUE)] <- "salud"
+comPres$comShort[grep("seguridad ciudadana", comPres$comision, ignore.case = TRUE)] <- "seguridad"
+comPres$comShort[grep("trabajo", comPres$comision, ignore.case = TRUE)] <- "trabajo"
+comPres$comShort[grep("vivienda", comPres$comision, ignore.case = TRUE)] <- "vivienda"
+comPres$comShort[grep("zonas", comPres$comision, ignore.case = TRUE)] <- "zonas extremas"
+
+comPres$dcomSamePres <- as.numeric(  (comPres$partido=="DC" & comPres$yr==1990)
+                                   | (comPres$partido=="DC" & comPres$yr==1994)
+                                   | (comPres$partido=="DC" & comPres$yr==1998)
+                                   | (comPres$partido=="DC" & comPres$yr==2002)
+                                   | (comPres$partido=="DC" & comPres$yr==2006)
+                                   | (comPres$partido=="DC" & comPres$yr==2010)
+                                   | (comPres$partido=="PS" & comPres$yr==2014)
+
+table(comPres$comision[comPres$yr>=1998 & comPres$yr<2014])
+table(comPres$comShort[comPres$yr>=1998 & comPres$yr<2014])
+
+table(comPres$partido)
+head(comPres)
+
+allCom.tmp <- list()
+bills$info$committee <- ""
+for (i in 1:I){
+    message(sprintf("loop %s of %s", i, I))
+    #i <- 1 # debug
+    tmp <- bills$hitos[[i]]$action[grep(".*[Pp]asa a [Cc]omisi[óo]n.*", bills$hitos[[i]]$action)]
+    allCom.tmp[[i]] <- tmp
+    #if (length(grep("[Hh]acienda", tmp))>0) bills$info$drefHda[i] <- 1
+}
+allCom.tmp <- unlist(allCom.tmp)
+allCom.tmp <- gsub(pattern = "Ingreso de proyecto. (?:Cuenta:|Pasa a) ", replacement = "", allCom.tmp)
+allCom.tmp <- gsub(pattern = "Cuenta de proyecto. Pasa a ", replacement = "", allCom.tmp)
+allCom.tmp <- gsub(pattern = "Eximido del trámite ante Comisión.+Pasa a ", replacement = "", allCom.tmp, ignore.case = TRUE)
+allCom.tmp <- gsub(pattern = "(?:Nuevo p|P)rimer informe (?:de comisión|complementario). *(?:Cuenta de informe(?: de Comisión)*. *)*Pasa a ", replacement = "", allCom.tmp, ignore.case = TRUE)
+allCom.tmp <- gsub(pattern = "(?:Nuevo s|S)egundo informe (?:de comisión|complementario). (?:. )*Pasa a ", replacement = "", allCom.tmp)
+allCom.tmp <- gsub(pattern = "Por acuerdo de la Sala pasa a ", replacement = "", allCom.tmp)
+allCom.tmp <- gsub(pattern = "Nuevo informe de comisión. Pasa a ", replacement = "", allCom.tmp)
+allCom.tmp <- gsub(pattern = "Oficio rechazo modificaciones a.+pasa a ", replacement = "", allCom.tmp)
+allCom.tmp <- gsub(pattern = "Informe de comisión. Pasa a", replacement = "", allCom.tmp)
+allCom.tmp <- gsub(pattern = "Discusión (?:general|particular).+pasa a ", replacement = "", allCom.tmp)
+allCom.tmp <- gsub(pattern = "Discusión única. Rechazadas las modificaciones Pasa a", replacement = "", allCom.tmp)
+allCom.tmp <- gsub(pattern = "Discusión única. Se aprueban unas y rechazan otras modificaciones de la Cámara. Pasa a", replacement = "", allCom.tmp)
+allCom.tmp <- gsub(pattern = "Pasa a ", replacement = "", allCom.tmp)
+
+table(allCom.tmp)
+head(allCom.tmp)
+
+
+
+table(bills$info$drefHda)
+

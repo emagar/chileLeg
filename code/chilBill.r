@@ -1,7 +1,6 @@
 # prendientes Ges y Valeria [21-11-2016, santiago]
 # verificar que no esté contando dos veces las urgencias en mis chains (en cámara, luego en senado)
 
-
 rm(list=ls())
 
 # data directory
@@ -2367,7 +2366,7 @@ save.image(file="chilBill.RData")
 # export csv
 bills$info$yrin <- year(bills$info$dateIn); bills$info$moin <- month(bills$info$dateIn); bills$info$dyin <- day(bills$info$dateIn);
 #bills$outfo$yrout[] <- year(bills$outfo$dateOut); bills$outfo$moout <- month(bills$outfo$dateOut); bills$outfo$dyout <- day(bills$outfo$dateOut);
-write.csv(bills$info, file = paste(datdir, "bills-info.csv", sep = ""))
+write.csv(bills$info, file = paste(datdir, "bills-info.csv", sep = ""), row.names = FALSE)
 
 ######################################################################
 ######################################################################
@@ -2375,13 +2374,199 @@ rm(list=ls())                                                       ##
 datdir <- "/home/eric/Dropbox/data/latAm/chile/data/"               ##
 setwd(datdir)                                                       ##
 load(file = "chilBill.RData")                                       ##
-options(width = 140)                                                ##
+options(width = 100)                                                ##
 ######################################################################
 ######################################################################
+
+colnames(bills$info)
+dim(bills$info)
+
+## Hasta ahora lo de Valeria no tiene la info deseada
+## LOAD VALERIA'S DATA INCLUDING BILL IMPORTANCE
+library(tibble) # more flexible data frames
+library(dplyr)
+library(lubridate)
+## load(file = "vale/Legislation_1990_2014.rda")
+## vp1 <- long; rm(long)
+## colnames(vp1)
+## table(vp1$tipo_num)
+## #
+## library(readstata13)
+## vp2 <- read.dta13(file = "vale/vetos_v2_1990-2014_20170422.dta")
+## colnames(vp2)
+## #
+## # includes bill importance == Alude a la relevancia legal de los proyectos de ley tramitados, considerando variables como su alcance, repercusión o efectos, incidencia territorial o poblacional, etc. 1: Importancia Alta 2: Importancia Media 3: Importancia Baja 
+## vp3 <- read.dta13(file = "vale/Chile_bills1_pbravo.dta")
+## colnames(vp3)
+## library(lubridate)
+## vp3$fechaingreso <- mdy(vp3$fechaingreso)
+## table(year(vp3$fechaingreso), vp3$importancia, useNA = "always")
+## #
+## # otras versiones de los datos de vp
+## library(readr)
+## vp4 <- read_csv(file = "vale/Base Productividad Legislativa (variable partido incluida)_vp.csv")
+## vp4$Fechaingreso <- mdy(vp4$Fechaingreso)
+## table(year(vp4$Fechaingreso), vp4$Importancia, useNA = "always")
 #
+vp5 <- read.csv(file = "vale/Base revisada.csv", stringsAsFactors = FALSE)
+vp5$Fechaingreso <- mdy(vp5$Fechaingreso)
+table(year(vp5$Fechaingreso), vp5$Importancia, useNA = "always")
+# keep importancia only
+vp5$importancia <- vp5$Importancia # rename
+#vp5
+vp5 <- vp5[,c("nboletin","importancia")]
+#
+# merge Vale's importancia here <<< FOR UNKNOWN REASONS, bills$info changes after merging importancia in... will keep importancia apart in same order...
+tmp <- bills$info
+tmp$orden <- 1:nrow(tmp)
+tmp <- merge(x = tmp, y = vp5, by.x = "bol", by.y = "nboletin", all.x = TRUE, all.y = FALSE)
+tmp <- tmp[order(tmp$orden),]
+importancia.vale <- tmp[, c("bol","importancia")]
+importancia.vale <- as.tibble(importancia.vale)
+
+# materia según boletín
+bills$info$materiaBol <- as.numeric(gsub(pattern = "[0-9]+[-]([0-9]+)", replacement = "\\1", bills$info$bol))
+
+# codifica materia
+bills$info$materiaCat <- NA
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("Derechos Humanos|derecho de las personas|Gobierno de facto|Justicia militar|militares|libertad de expresión|retorno|rehabilitación de la nacionalidad|amnist[ií]a|ciudadanos|fuerzas armadas|armada|marina de chile|exilio|exilado|tropas|tortura|conscript", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "militares/DD.HH."
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("exporta|importa|zona franca|aduanas|arancel|turismo|comercio|tlc|tle chile-", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Comercio"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("Acuicultura|Pesca|Forestal|Agr[ií]c|ambient|desalinización|cooperativa|cultivo|residuos", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Agricultura/medio ambiente"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("cobre|miner|de minas", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Cobre"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("Educación|Capacitación|Universidad|Subvención|ciencia|tecnología|investigación|enseñan|ex[áa]men|acreditación|universidad|univesitari", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Educación"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("Kinesio|Salud|medicamento|sanitario", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Salud"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("Convenio|antártico|Acuerdo|otros países|tratado", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Convenios intl"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("Estadio|Deporte|hípica", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Deporte"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("industria", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Industria"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("trabajo|laboral|trabajador|empleador|Retiro Voluntario|Colegios Profesionales|aguinaldo|salario|sindica|pensi[oó]n|bono|ingreso", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Trabajo pensiones"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("Consumidor|clientes|nutricional|bienes raíces", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Consumidor"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("Vivienda|construcci", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Vivienda"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("Crédito|Inversi[oó]n|pago electrónico|medios de pago|financier|seguro", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Sector financiero"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("Bienes del estado|personal de|empresas del estado|dirección pública", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Sector público"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("Monumentos", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Symbolic"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("Patrimonio cultural", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Cultura"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("Penitenciaria|penal|policía|Infracciones|drogas|criminal|delito|terror|penas|indulto|carabineros|fuerzas del* orden|mercenario|armas", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Law and order"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("Generador|El[ée]ctri|petr[óo]le", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Energía"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("Elecci[oó]n|electora|Congreso|presidencia|consejeros|concejales|diputados|senadores|ministerio|municip|administración pública|poder judicial|feriado judicial|partidos|votaci[oó]|toma de razón|quórum", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Gov branches/elections"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("carretera|autopista|aeropuerto|trenes|cruceros|barcos|aéreo|aviación|aeronáuti|navegación|puertos|transporte|televisi[óo]n|radio|microondas|internet", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Comunicación y transportes"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("nacionalización", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Private bill"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("recaudación|tributar|impuesto|presupuesto|fiscal", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Recaudación"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("migraci[oó]n|masiva de diarios|cédula|chileatiende|zonas aisladas|estadística", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Interior"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("mujer|familia|niñ[oa]|infantil|adopción|maternidad", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "Género"
+bills$info[sel.na,] <- tmp # return to data
+#
+sel.na <- which(is.na(bills$info$materiaCat)); tmp <- bills$info[sel.na,] # ignore already coded rows
+sel <- grep("rr[.]ee|visa|diplomátic", tmp$materia, ignore.case = TRUE)
+tmp$materiaCat[sel] <- "RR.EE."
+bills$info[sel.na,] <- tmp # return to data
+#
+# unfinished... reasonable overlap with bolCat
+sel <- which(is.na(bills$info$materiaCat)==TRUE & bills$info$dmensaje==1)
+table(is.na(bills$info$materiaCat[bills$info$dmensaje==1]))
+tail(bills$info$materia[sel])
+#
+table(bills$info$materiaBol[bills$info$dmensaje==1], is.na(bills$info$materiaCat[bills$info$dmensaje==1]))
+#
+tmp$materiaBol <- NULL # recoded more finely below
+
 # NEED INDICATORS OF VOTING QUORUM!! --- REFERRED TO CONSTITUTIONAL COMMITTEE IS GOOD PROXY!!!!
 #                                        GET IT AND INTERACT WITH PDT'S MARGIN IN CHAMBER
-# AFTER CLEANING COMMITTEE REFERRAL, CHECK IF FINAN COMMITTEE DUMMY CAPTURES SAME INFO
+# AFTER CLEANING COMMITTEE REFERRAL, CHECK IF FINANCE COMMITTEE DUMMY CAPTURES SAME INFO
 # ADD SIZE OF PDT'S AGENDA IN LEG YEAR
 #
 # FROM URBANA PRESENTATION
@@ -2423,7 +2608,7 @@ tmp12 <- read.csv(file = paste(datdir, "memoRollCallSum/ChileDep2013-Votes.csv",
 tmp13 <- read.csv(file = paste(datdir, "memoRollCallSum/ChileDep2014-Votes.csv", sep = ""), stringsAsFactors=FALSE) # had weird encoding, semi-solved it 
 tmp <- rbind(tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, tmp10, tmp11, tmp12, tmp13); rm(tmp01, tmp02, tmp03, tmp04, tmp05, tmp06, tmp07, tmp08, tmp09, tmp10, tmp11, tmp12, tmp13)
 #
-# drop non-boletín votes
+# drop non-boletín votes ... need to inspect what is dropped, procedural stuff?
 sel <- grep(pattern = "Boletín", tmp$Detail)
 tmp <- tmp[sel,]
 #
@@ -2888,6 +3073,7 @@ allUrg$msgOff <- tmp2
 library(lubridate)
 sel <- which(allUrg$on>dmy("10/03/2014"))
 allUrg <- allUrg[-sel,]
+
 #
 # ATTEMPT TO CORRECT NO OVERLAPS IN URGENCIAS WITHOUT FIXING ALL FROM:TO DATES IN TRAMITES---CHERRY-PICK CASES WITH NO OVERLAP
 # SEEMS TO WORK!!
@@ -4855,6 +5041,13 @@ load(file = "tmp.RData")                                            ##
 #options(width = 140)                                                ##
 library(lubridate); library(plyr)
 
+# incorpora importancia a bills
+dim(bills$info)
+dim(importancia.vale)
+bills$importancia <- as.data.frame(importancia.vale)
+summary(bills)
+rm(importancia.vale)
+
 tmp <- bills$info
 sel <- which(tmp$drefSalud==1 & tmp$drefHda==1)
 grep("[Mm]unicip", tmp$titulo[sel])
@@ -5685,8 +5878,8 @@ bills$info$dom[bills$info$ndom==33] <- "narrow"
 #
 table(bills$info$dom)
 #
-# drop ndom (handy if selecting domains)
-bills$info$ndom <- NULL
+## # drop ndom (handy if selecting domains)
+## bills$info$ndom <- NULL
 
 # FIND SPONSORS
 # FILL MISSING SPONSORS
@@ -6326,7 +6519,10 @@ tmp <-
     bills$info$dcomUnidas +
     bills$info$drefZonas
 round(table(tmp>1)/length(tmp), 2) # unlike dmultiref, this includes Hda referrals
-round(table(bills$info$dmultiRef)/length(bills$info$dmultiRef), 2) # reported in text: proportion bills with multiple referrals
+################################################################
+## reported in text: proportion bills with multiple referrals ##
+################################################################
+round(table(bills$info$dmultiRef)/length(bills$info$dmultiRef), 2)
 #
 rm(i,j,keep,target,sel,tmp,tmp1,tmp2,tmp3,tmp4,tmp5,tmpHit,tmpPeriod,tmpVotIndices)
 
@@ -6337,8 +6533,13 @@ table(comPres$yr, comPres$doposCom)
 
 #####################################################################
 rm(drop, fit, fit11, fit12, fit13, fit14, fit15, fit16, RepDataNegBin)
+
+colnames(bills$info)
+grep("import", colnames(bills$info))
+
 save.image("dataForUrgencyRegressions.RData")
 # save added 30aug2017
+
 
 #####################################
 # AQUÍ EMPIEZA EL ANÁLISIS PARA     #
@@ -6346,10 +6547,10 @@ save.image("dataForUrgencyRegressions.RData")
 # CON VALERIA Y GES                 #
 #####################################
 rm(list=ls())
-datdir <- "/home/eric/Dropbox/data/latAm/chile/data/"               ##
-setwd(datdir)                                                       ##
-load(file = "dataForUrgencyRegressions.RData")                      ##
-options(width = 140)                                                ##
+datdir <- "/home/eric/Dropbox/data/latAm/chile/data/"
+setwd(datdir)                                        
+load(file = "dataForUrgencyRegressions.RData")       
+options(width = 140)
 library(lubridate); library(plyr)
 
 # recode new urgencia dummy to control for chamber where it happened
@@ -6545,13 +6746,16 @@ length(sel)
 library(xtable)
 xtable(tmp1, digits=0); xtable(tmp2, digits=0); xtable(tmp3, digits=0); xtable(tmp4, digits=0); xtable(tmp5, digits=0)
 
+# clean
+rm(sel, sel2, sel.na, tmp, tmp2, tmp3, tmp4, tmp5)
 
-
-
-# LOGIT ON WHETHER NOT BILL DECLARED URGENT
+#############################################
+# LOGIT ON WHETHER NOT BILL DECLARED URGENT #
+#############################################
 #sel <- which(bills$info$dateIn>=dmy("11/3/1998") & bills$info$dateIn<dmy("11/3/2014"))
 sel <- which(bills$info$dateIn>=dmy("11/3/1998") & bills$info$dateIn<dmy("11/3/2014") & bills$info$dmensaje==1)
 tmpdat <- bills$info[sel,]
+tmp.importancia <- bills$importancia[sel,]
 #
 # Add president's maj status in chamber
 tmpdat$dmajDip <- tmpdat$dmajSen <- 0
@@ -6709,13 +6913,49 @@ colnames(tmpdat)
 # [EM 23ago2017] Dentro del grupo dsameCoal==0 aún hay mucha varianza en el uso de urgencias. Falta hacer exploración descriptiva para detectar elementos que se correlacionan, y añadir más controles...
 #fit <- lm (dv ~ dmocionAllOpp + dmocionMix + dmocionAllPdt + drefHda + dmajSen + dinSen + pterm + legyr, data = tmpdat)
 # 
-# select one DV here
+##################
+# select DV here #
+##################
 #tmpdat$dv <- tmpdat$dv1 # discusión inmediata only
-tmpdat$dv <- tmpdat$dv2 # suma urgencia only
+tmpdat$dv <- tmpdat$dv2 # suma urgencia only ~~~~  USED IN PAPER  ~~~~
 #tmpdat$dv <- tmpdat$dv12 # discusión inmediata and urgencia suma
 
+# Describe dv by pdt/yr
+tmpdat$pdtyr <- NA
+tmpdat$pdtyr[ymd(tmpdat$dateIn) >= dmy("11-3-1998") & ymd(tmpdat$dateIn) < dmy("11-3-1999")] <- "a. Frei-5"
+tmpdat$pdtyr[ymd(tmpdat$dateIn) >= dmy("11-3-1999") & ymd(tmpdat$dateIn) < dmy("11-3-2000")] <- "a. Frei-6"
+tmpdat$pdtyr[ymd(tmpdat$dateIn) >= dmy("11-3-2000") & ymd(tmpdat$dateIn) < dmy("11-3-2001")] <- "b. Lagos-1"
+tmpdat$pdtyr[ymd(tmpdat$dateIn) >= dmy("11-3-2001") & ymd(tmpdat$dateIn) < dmy("11-3-2002")] <- "b. Lagos-2"
+tmpdat$pdtyr[ymd(tmpdat$dateIn) >= dmy("11-3-2002") & ymd(tmpdat$dateIn) < dmy("11-3-2003")] <- "b. Lagos-3"
+tmpdat$pdtyr[ymd(tmpdat$dateIn) >= dmy("11-3-2003") & ymd(tmpdat$dateIn) < dmy("11-3-2004")] <- "b. Lagos-4"
+tmpdat$pdtyr[ymd(tmpdat$dateIn) >= dmy("11-3-2004") & ymd(tmpdat$dateIn) < dmy("11-3-2005")] <- "b. Lagos-5"
+tmpdat$pdtyr[ymd(tmpdat$dateIn) >= dmy("11-3-2005") & ymd(tmpdat$dateIn) < dmy("11-3-2006")] <- "b. Lagos-6"
+tmpdat$pdtyr[ymd(tmpdat$dateIn) >= dmy("11-3-2006") & ymd(tmpdat$dateIn) < dmy("11-3-2007")] <- "c. Bachelet-1"
+tmpdat$pdtyr[ymd(tmpdat$dateIn) >= dmy("11-3-2007") & ymd(tmpdat$dateIn) < dmy("11-3-2008")] <- "c. Bachelet-2"
+tmpdat$pdtyr[ymd(tmpdat$dateIn) >= dmy("11-3-2008") & ymd(tmpdat$dateIn) < dmy("11-3-2009")] <- "c. Bachelet-3"
+tmpdat$pdtyr[ymd(tmpdat$dateIn) >= dmy("11-3-2009") & ymd(tmpdat$dateIn) < dmy("11-3-2010")] <- "c. Bachelet-4"
+tmpdat$pdtyr[ymd(tmpdat$dateIn) >= dmy("11-3-2010") & ymd(tmpdat$dateIn) < dmy("11-3-2011")] <- "d. Piñera-1"
+tmpdat$pdtyr[ymd(tmpdat$dateIn) >= dmy("11-3-2011") & ymd(tmpdat$dateIn) < dmy("11-3-2012")] <- "d. Piñera-2"
+tmpdat$pdtyr[ymd(tmpdat$dateIn) >= dmy("11-3-2012") & ymd(tmpdat$dateIn) < dmy("11-3-2013")] <- "d. Piñera-3"
+tmpdat$pdtyr[ymd(tmpdat$dateIn) >= dmy("11-3-2013") & ymd(tmpdat$dateIn) < dmy("11-3-2014")] <- "d. Piñera-4"
+tmp <- table(tmpdat$pdtyr, tmpdat$dv)
+tmp <- rbind(tmp, colSums(tmp))
+tmp2 <- data.frame(supUrg=tmp[,2]*100 / rowSums(tmp), not=tmp[,1]*100/rowSums(tmp), tot=100, n=rowSums(tmp))
+round(tmp2,0)
+
+# Describe dv by pdt -- added feb. 2019
+tmpdat$pdt <- NA
+tmpdat$pdt[ymd(tmpdat$dateIn) >= dmy("11-3-1998") & ymd(tmpdat$dateIn) < dmy("11-3-2000")] <- "a. Frei"
+tmpdat$pdt[ymd(tmpdat$dateIn) >= dmy("11-3-2000") & ymd(tmpdat$dateIn) < dmy("11-3-2006")] <- "b. Lagos"
+tmpdat$pdt[ymd(tmpdat$dateIn) >= dmy("11-3-2006") & ymd(tmpdat$dateIn) < dmy("11-3-2010")] <- "c. Bachelet"
+tmpdat$pdt[ymd(tmpdat$dateIn) >= dmy("11-3-2010") & ymd(tmpdat$dateIn) < dmy("11-3-2014")] <- "d. Piñera"
+tmp <- table(tmpdat$pdt, tmpdat$dv)
+tmp <- rbind(tmp, colSums(tmp))
+tmp2 <- data.frame(supUrg=tmp[,2]*100/rowSums(tmp), not=tmp[,1]*100/rowSums(tmp), tot=100, n=rowSums(tmp))
+round(tmp2,0)
+
 colnames(tmpdat)
-table(tmpdat$yr)
+table(tmpdat$dom)
 
 fit1 <-  glm(dv ~ dsamePty  + dmultiRef + dmocion + drefHda + dmajSen + dinSen + legyrR + legyrR2 + dreform2010 + netApprovR                  , data = tmpdat,                      family = binomial(link = logit))
 fit1e <- glm(dv ~ dsamePty  + dmultiRef +         + drefHda + dmajSen + dinSen + legyrR + legyrR2 + dreform2010 + netApprovR                  , data = tmpdat, subset = dmocion==0, family = binomial(link = logit))
@@ -6903,8 +7143,9 @@ stargazer(fit1e, fit2e, fit3e, fit4e, title="Regression results", align=TRUE, re
 ## library(apsrtable)
 ## apsrtable(fit1, fit2)
 
-
-# Average marginal effects
+############################
+# Average marginal effects #
+############################
 library(margins)
 mar3 <- margins(fit3e)
 mar3 <- summary(mar3)
@@ -6963,6 +7204,172 @@ for (i in c(-1:-nrow(mar3))){
 polygon(x= c(-.45,-.22,-.22,-.45), y=c(-11,-11,0,0), col = "white", border = "white")
 text(x=-.425, y=-1:-nrow(mar3), labels=tmp, pos=4)
 #dev.off()
+
+###############################################################
+# For appendix: models 2 and 3 for bill subsets by issue area #
+###############################################################
+#
+# model2e for subsets of bills 
+tmpdat$domn <- as.numeric(gsub(pattern = "0*([0-9]+)[-].*", replacement = "\\1", tmpdat$dom, perl = TRUE))
+table(tmpdat$dom, tmpdat$dsameCoal) # too few zeroes in many subsets
+table(tmpdat$materiaCat, tmpdat$dsameCoal ) # too few zeroes in many subsets
+#
+# merge some categories
+tmpdat$matCat <- tmpdat$materiaCat
+tmpdat$matCat[tmpdat$matCat=="Cobre" | tmpdat$matCat=="Recaudación"] <- "Cobre y recaudación"
+tmpdat$matCat[tmpdat$matCat=="Convenios intl" | tmpdat$matCat=="RR.EE."] <- "RR.EE. convenios"
+table(tmpdat$matCat, tmpdat$dsameCoal )
+#
+table(tmpdat$matCat, tmpdat$dsameCoal)
+#
+tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dmajSen + dinSen + legyrR + legyrR2 + dreform2010 + netApprovR, data = tmpdat, subset = (dmocion==0 & (domn==1|domn==12|domn==21)), family = binomial(link = logit));tmp->fit2e011221
+#tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dmajSen + dinSen + legyrR + legyrR2 + dreform2010 + netApprovR, data = tmpdat, subset = (dmocion==0 & (domn==2|domn==17))         , family = binomial(link = logit));tmp->fit2e0217
+tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dmajSen + dinSen + legyrR + legyrR2 + dreform2010 + netApprovR, data = tmpdat, subset = (dmocion==0 & (domn==3|domn==5|domn==8))  , family = binomial(link = logit));tmp->fit2e030508
+tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dmajSen + dinSen + legyrR + legyrR2 + dreform2010 + netApprovR, data = tmpdat, subset = (dmocion==0 & domn==10)                   , family = binomial(link = logit));tmp->fit2e10
+#tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dmajSen + dinSen + legyrR + legyrR2 + dreform2010 + netApprovR, data = tmpdat, subset = (dmocion==0 & domn==15)                   , family = binomial(link = logit));tmp->fit2e15
+#
+tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dmajSen + dinSen + legyrR + legyrR2 + dreform2010 + netApprovR, data = tmpdat, subset = (dmocion==0 & matCat=="Agricultura/medio ambiente"), family = binomial(link = logit));tmp->fit2eAgri
+#tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dmajSen + dinSen + legyrR + legyrR2 + dreform2010 + netApprovR, data = tmpdat, subset = (dmocion==0 & matCat=="Cobre y recaudación"), family = binomial(link = logit));tmp->fit2eCobre
+tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dmajSen + dinSen + legyrR + legyrR2 + dreform2010 + netApprovR, data = tmpdat, subset = (dmocion==0 & matCat=="Comercio"), family = binomial(link = logit));tmp->fit2eComer
+#tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dmajSen + dinSen + legyrR + legyrR2 + dreform2010 + netApprovR, data = tmpdat, subset = (dmocion==0 & matCat=="Energía"), family = binomial(link = logit));tmp->fit2eEner
+tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dmajSen + dinSen + legyrR + legyrR2 + dreform2010 + netApprovR, data = tmpdat, subset = (dmocion==0 & matCat=="RR.EE. convenios"), family = binomial(link = logit));tmp->fit2eRREE
+#
+# model3e for subsets of bills 
+tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dinSen + legyrR + legyrR2 + netApprovR + as.factor(legis), data = tmpdat, subset = (dmocion==0 & (domn==1|domn==12|domn==21)), family = binomial(link = logit));tmp->fit3e011221
+#tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dinSen + legyrR + legyrR2 + netApprovR + as.factor(legis), data = tmpdat, subset = (dmocion==0 & (domn==2|domn==17))         , family = binomial(link = logit));tmp->fit3e0217
+tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dinSen + legyrR + legyrR2 + netApprovR + as.factor(legis), data = tmpdat, subset = (dmocion==0 & (domn==3|domn==5|domn==8))  , family = binomial(link = logit));tmp->fit3e030508
+tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dinSen + legyrR + legyrR2 + netApprovR + as.factor(legis), data = tmpdat, subset = (dmocion==0 & domn==10)                   , family = binomial(link = logit));tmp->fit3e10
+#tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dmajSen + dinSen + legyrR + legyrR2 + dreform2010 + netApprovR, data = tmpdat, subset = (dmocion==0 & domn==15)                   , family = binomial(link = logit));tmp->fit2e15
+#
+tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dinSen + legyrR + legyrR2 + netApprovR + as.factor(legis), data = tmpdat, subset = (dmocion==0 & matCat=="Agricultura/medio ambiente"), family = binomial(link = logit));tmp->fit3eAgri
+#tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dinSen + legyrR + legyrR2 + netApprovR + as.factor(legis), data = tmpdat, subset = (dmocion==0 & matCat=="Cobre y recaudación"), family = binomial(link = logit));tmp->fit3eCobre
+tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dinSen + legyrR + legyrR2 + netApprovR + as.factor(legis), data = tmpdat, subset = (dmocion==0 & matCat=="Comercio"), family = binomial(link = logit));tmp->fit3eComer
+#tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dinSen + legyrR + legyrR2 + netApprovR + as.factor(legis), data = tmpdat, subset = (dmocion==0 & matCat=="Energía"), family = binomial(link = logit));tmp->fit3eEner
+tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dinSen + legyrR + legyrR2 + netApprovR + as.factor(legis), data = tmpdat, subset = (dmocion==0 & matCat=="RR.EE. convenios"), family = binomial(link = logit));tmp->fit3eRREE
+#summary(tmp)
+#
+##### coef(tmp)["dsameCoal"]
+##### summary(tmp)$coefficients[2,1]
+##### summary(tmp)$coefficients[2,2]
+#
+#################################################
+# Average marginal effects for subsets of bills #
+#################################################
+library(margins)
+res <- data.frame()
+#
+mar2 <- margins(fit2e)
+mar2 <- summary(mar2)
+res <- rbind(res, mar2[mar2$factor=="dsameCoal",])
+#
+mar2 <- margins(fit2e011221)
+mar2 <- summary(mar2)
+res <- rbind(res, mar2[mar2$factor=="dsameCoal",])
+#
+mar2 <- margins(fit2e030508)
+mar2 <- summary(mar2)
+res <- rbind(res, mar2[mar2$factor=="dsameCoal",])
+#
+mar2 <- margins(fit2e10)
+mar2 <- summary(mar2)
+res <- rbind(res, mar2[mar2$factor=="dsameCoal",])
+#
+mar2 <- margins(fit2eAgri)
+mar2 <- summary(mar2)
+res <- rbind(res, mar2[mar2$factor=="dsameCoal",])
+#
+mar2 <- margins(fit2eComer)
+mar2 <- summary(mar2)
+res <- rbind(res, mar2[mar2$factor=="dsameCoal",])
+#
+mar2 <- margins(fit2eRREE)
+mar2 <- summary(mar2)
+res <- rbind(res, mar2[mar2$factor=="dsameCoal",])
+#
+mar3 <- margins(fit3e)
+mar3 <- summary(mar3)
+res <- rbind(res, mar3[mar3$factor=="dsameCoal",])
+#
+mar3 <- margins(fit3e011221)
+mar3 <- summary(mar3)
+res <- rbind(res, mar3[mar3$factor=="dsameCoal",])
+#
+mar3 <- margins(fit3e030508)
+mar3 <- summary(mar3)
+res <- rbind(res, mar3[mar3$factor=="dsameCoal",])
+#
+mar3 <- margins(fit3e10)
+mar3 <- summary(mar3)
+res <- rbind(res, mar3[mar3$factor=="dsameCoal",])
+#
+mar3 <- margins(fit3eAgri)
+mar3 <- summary(mar3)
+res <- rbind(res, mar3[mar3$factor=="dsameCoal",])
+#
+mar3 <- margins(fit3eComer)
+mar3 <- summary(mar3)
+res <- rbind(res, mar3[mar3$factor=="dsameCoal",])
+#
+mar3 <- margins(fit3eRREE)
+mar3 <- summary(mar3)
+res <- rbind(res, mar3[mar3$factor=="dsameCoal",])
+#
+subset <- c("all2","bol-agric-mmaa2","bol-eco-cobre2","bol-rree2","mat-agric-mmaa2","mat-exports2","mat-rree-convenio2",
+            "all3","bol-agric-mmaa3","bol-eco-cobre3","bol-rree3","mat-agric-mmaa3","mat-exports3","mat-rree-convenio3")
+subset2 <- c("All bills","Agric. (bol.)","Mining-taxes (bol.)","Foreign aff. (bol.)","Agric. (mat.)","Exports (mat.)","Foreign aff. (mat.)",
+            "All bills","Agric. (bol.)","Mining-taxes (bol.)","Foreign aff. (bol.)","Agric. (mat.)","Exports (mat.)","Foreign aff. (mat.)")
+n <- c(nobs(fit2e), nobs(fit2e011221), nobs(fit2e020508), nobs(fit2e10), nobs(fit2eAgri), nobs(fit2eComer), nobs(fit2eRREE),
+       nobs(fit3e), nobs(fit3e011221), nobs(fit3e030508), nobs(fit3e10), nobs(fit3eAgri), nobs(fit3eComer), nobs(fit3eRREE))
+#
+res <- as.data.frame(res)
+res[,1] <- subset2
+res$n <- n
+res[,2:7] <- round(res[,2:7],3)
+colnames(res)[1] <- "subset"
+res
+#
+
+##########################################################
+## model 3 using vale's importancia for bachelet piñera ##
+##########################################################
+table(tmpdat$materiaCat[ymd(tmpdat$dateIn)>=dmy("11-3-2006")], tmp.importancia$importancia[ymd(tmpdat$dateIn)>=dmy("11-3-2006")], useNA = "always")
+table(tmp.importancia$importancia[ymd(tmpdat$dateIn)>=dmy("11-3-2006")], useNA = "always")
+#
+tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dinSen + legyrR + legyrR2 + netApprovR + as.factor(legis), data = tmpdat, subset = (dmocion==0 & tmp.importancia$importancia==1), family = binomial(link = logit));tmp->fit3eLow
+tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dinSen + legyrR + legyrR2 + netApprovR + as.factor(legis), data = tmpdat, subset = (dmocion==0 & tmp.importancia$importancia==2), family = binomial(link = logit));tmp->fit3eMid
+tmp <- glm(dv ~ dsameCoal + dmultiRef + drefHda + dinSen + legyrR + legyrR2 + netApprovR + as.factor(legis), data = tmpdat, subset = (dmocion==0 & tmp.importancia$importancia!=1), family = binomial(link = logit));tmp->fit3eMidHi
+#
+summary(fit3eLow)
+summary(fit3eMid)
+summary(fit3eMidHi)
+x
+
+gr <- "../graphs/"
+#pdf (file = paste(gr, "avgMgEffects-subsets.pdf", sep = ""), width = 7, height = 5)
+par(mar=c(4,2,2,2)+0.1) # drop title space and left space
+plot(x=c(-1,1.3),
+     y=-c(1,nrow(res)),
+     type="n", axes = FALSE,
+     xlab = "Average marginal effect",
+     ylab = "")
+abline(v=seq(-.6, 1.1, .1), col = "gray70")
+abline(v=0, lty=2)
+abline(h=seq(-1,-nrow(res),-1), col = "gray70")
+axis(1, at = round(seq(-.6, 1, .2),1))
+for (i in c(-1:-nrow(res))){
+    points(y=i, x=res$AME[-i], pch=20, cex=1.5, col = "black")
+    lines(y=rep(i, 2), x=c(res$lower[-i],res$upper[-i]), lwd = 2, col = "black")
+}
+#mar3$factor
+polygon(x= c(-1.1,-.62,-.62,-1.1), y=c(-15,-15,0,0), col = "white", border = "white")
+text(x=-1.1, y=-1:-nrow(res), labels=subset2, pos=4)
+polygon(x= c(1.12,1.4,1.4,1.12), y=c(-15,-15,0,0), col = "white", border = "white")
+text(x=1.1, y=-1:-nrow(res), labels=paste("N =",n), pos=4, cex = .8)
+text(x=.7, y=-1.5, labels="Model 2", pos=4, font = 2)
+text(x=.7, y=-8.5, labels="Model 3", pos=4, font = 2)
+abline(h=-7.5)
+#dev.off()
+
 
 sel <- which(tmpdat$yr==2006)
 summary(tmpdat$netApprovR[sel])
@@ -8377,7 +8784,7 @@ rm(tmp)
 
 head(dat)
 
-write.csv(dat, file="boletines.csv")
+write.csv(dat, file="boletines.csv", row.names = FALSE)
 
 proyec2 <- read.csv("proyec2.csv")
 colnames(proyec2)
@@ -8389,7 +8796,7 @@ joint <- merge(x = proyec2, y = boletines, by = "boletin")
 
 colnames(joint)
 joint <- joint[, c("boletin", "comision", "bolCom", "url","sumario", "titulo", "note")]
-write.csv(joint, "proy3.csv")
+write.csv(joint, "proy3.csv", row.names = FALSE)
 
 
 joint$prmID <- NULL
