@@ -1,0 +1,103 @@
+\begin{table}
+\centering
+\caption{Proposals, legislation, and fast-track authority}\label{T:billDescriptives}
+\begin{tabular}{llrr}
+\multicolumn{4}{c}{\textbf{Part A. Executive bills}} \\
+   & \multicolumn{2}{l}{Bills}                           &   frequency  \\ \hline
+I  & \multicolumn{2}{l}{introduced}                      &       1,467  \\ \hdashline
+II & \multicolumn{2}{l}{passed}                          &       1,059  \\
+   & \multicolumn{2}{l}{as \% of introduced}             &   \emph{72}  \\ \hdashline
+III& \multicolumn{2}{l}{fast-tracked}                    &         540  \\
+   & \multicolumn{2}{l}{as \% of introduced}             &   \emph{37}  \\ \hdashline
+IV & \multicolumn{2}{l}{fast-tracked \& passed}          &         415  \\
+   & \multicolumn{2}{l}{as \% of fast-tracked}           &   \emph{77}  \\ \hline
+\\
+\multicolumn{4}{c}{\textbf{Part B. Urgent bills by presidency}} \\
+\multicolumn{2}{l}{President and period}    & $N$ bills & \% fast-tracked \\ \hline
+\multicolumn{2}{l}{Frei 1998--2000$^\dagger$} & 128       &  \emph{38} \\
+\multicolumn{2}{l}{Lagos 2000--2006}        & 544       &  \emph{25} \\
+\multicolumn{2}{l}{Bachelet 2006--2010}     & 392       &  \emph{39} \\
+\multicolumn{2}{l}{Pi\~nera 2010--2014}       & 403       &  \emph{50} \\ \hdashline
+\multicolumn{2}{l}{All 1998--2014}          & 1,467     &  \emph{37} \\
+\hline
+\multicolumn{4}{r}{\footnotesize{$^\dagger$ Last third of the six-year term in the analysis only.}} \\
+\end{tabular}
+\end{table}
+\efloatseparator
+ 
+\begin{table}
+\centering
+\caption{The president's status in Congress and its committees. Percent chairs/seats by party. The president's coalition in 1998--2010 was Concertaci\'on; it was Alianza afterwards. Regional includes major-party splinters (from Christian Democrats and Uni\'on Dem\'ocrata Independiente). President's status in the Senate slightly and briefly oscillated above and below majority due to vacant seats. Source: prepared with information from \protect\url{www.camara.cl}.}\label{T:chairsSeats}
+\begin{tabular}{lrrrr}
+                      & 1998--2002 & 2002--06 & 2006--10 & 2010--14 \\ \hline
+\mc{5}{c}{\textbf{~~Part A. Committee chairs, C\'amara}} \\
+President's party     &  \emph{53} & \emph{35}  & \emph{17}  & \emph{23}   \\
+Other coalition party &  \emph{41} & \emph{41}  & \emph{83}  & \emph{50}   \\
+Opposition            &   \emph{6} & \emph{24}  &            & \emph{27}   \\ \hdashline
+Total                 & \emph{100} & \emph{100} & \emph{100} & \emph{100}  \\
+$N$ standing committees&  17        &  17      &  18      & 22      \\ [1.8ex] \hline
+\mc{5}{c}{\textbf{~~Part B. Seats, C\'amara}} \\
+President's coalition & \emph{58}     & \emph{53}  & \emph{51}   & \emph{50}   \\
+Opposition            & \emph{42}     & \emph{48}  & \emph{47}   & \emph{48}   \\
+Regional              &               &            & \emph{3}    & \emph{2}    \\ \hdashline
+Total       & \emph{100}    & \emph{100} & \emph{100}  & \emph{100}  \\ [1.8ex] \hline
+\mc{5}{c}{\textbf{~~Part C. Seats, Senate}} \\
+President's coalition & \emph{50}            & \emph{50}       & \emph{55}   & \emph{45}       \\
+Opposition            & \emph{50}            & \emph{50}       & \emph{45}   & \emph{55}       \\ \hdashline
+Total                 & \emph{100}$^{\dagger}$ & \emph{100}      & \emph{100}  & \emph{100}      \\ \hline
+\mc{5}{r}{\footnotesize{$^\dagger$vacant seats dropped}}
+\end{tabular}
+\end{table}
+\efloatseparator
+ 
+\begin{table}
+  \centering
+  \caption{Executive bill fast-track predictors. Standard errors in parentheses. Model 3 includes fixed Legislatura effects (not reported). Model 4 estimates separate error terms by Legislatura. Method of estimation: model 4 with generalized linear model, others with logit \citep[fitted with \texttt{R} base's \texttt{glm} and library \texttt{lme4},][]{lme4.2015}.}\label{t:urgenLogit}
+  \begin{tabular}{@{\extracolsep{0pt}}lD{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} }
+    \hline \\[-1.8ex]
+    & \multicolumn{4}{c}{DV: Bill on fast-track (1) or not (0)} \\
+    \\[-1.8ex] & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)}\\
+    \\ [-1.8ex]
+    \hline \\[-1.8ex]
+    \emph{Co-partisan}     &  .289^{**}   &  &  &                                   \\
+    \emph{Chair}           & (.024)      &  &  &                                   \\ [.75ex]
+    \emph{Coalition}       &             & .825^{***}   & .874^{***}    & .847^{***}   \\
+    \emph{Chair}           &             & (.005)      & (<.001)     & (<.001)     \\ [.75ex]
+    \emph{Multiple}        &  .772^{***}  &  .795^{***}  &  .808^{***}   &  .809^{***}   \\
+    \emph{Referrals}       & (<.001)     & (<.001)     & (<.001)     & (.004)      \\ [.75ex]
+    \emph{Hacienda}        & 1.002^{***}  & .940^{***}   & .917^{***}    & .923^{***}    \\
+    \emph{Referral}        & (<.001)     & (<.001)     & (<.001)     & (<.001)     \\ [.75ex]
+    \emph{Pres.}           &  -.078      &  -.096      &  .029       & -.044       \\
+    \emph{Approval}        & (.286)      & (.187)      & (.710)      & (.567)      \\ [.75ex]
+    \emph{Introduced}      &  -.716^{***} &  -.698^{***}  &  -.744^{***} &  -.730^{***}  \\
+    \emph{in Senate}       & (<.001)     & (<.001)     & (<.001)      & (<.001)    \\ [.75ex]
+    \emph{Senate}          &  -.251      &  -.319      &             &             \\
+    \emph{Majority}        & (.214)      & (.110)      &             &             \\ [.75ex]
+    \emph{Year}            &  .072       &  .065       &  .053        &  .053      \\
+    \emph{Remaining}       & (.223)      & (.268)      & (.370)       & (.368)     \\ [.75ex]
+    \emph{(Year}           &  -.224^{***} &  -.238^{***}  &  -.255^{***}  &  -.251^{***} \\
+    \emph{Remaining)$^2$}  & (<.001)     & (<.001)      & (<.001)     & (<.001)    \\ [.75ex]
+    \emph{Relax}           &  .479^{*}    &  .394       &              &            \\
+    \emph{Deadline}        & (.057)      & (.104)      &              &            \\ [.75ex]
+    %% \emph{2002-06 Leg.} &  &  &  -.203 &                                        \\
+    %%                     &  &  & (.298) &                                        \\ [.75ex]
+    %% \emph{2006-10 Leg.} &  &  &  .302^{*} &                                     \\
+    %%                     &  &  & (.097) &                                        \\ [.75ex]
+    %% \emph{2010-14 Leg.} &  &  & 1.200^{***} &                                   \\
+    %%                     &  &  & (<.001) &                                       \\ [.75ex]
+    Intercept              &  -1.046^{***} & -1.589^{***} & -1.933^{***} & -1.719^{***}  \\
+                           & (<.001)      & (<.001)     & (<.001)    & (<.001)     \\ [.75ex]
+    \hline \\[-1.8ex]
+    Effects & \multicolumn{1}{c}{none} & \multicolumn{1}{c}{none} & \multicolumn{1}{c}{fixed} & \multicolumn{1}{c}{mixed} \\
+    Observations & \multicolumn{1}{c}{1,467} & \multicolumn{1}{c}{1,467} & \multicolumn{1}{c}{1,467} & \multicolumn{1}{c}{1,467} \\
+    Log$L$ & \multicolumn{1}{c}{$-864$} & \multicolumn{1}{c}{$-862$} & \multicolumn{1}{c}{$-852$} & \multicolumn{1}{c}{$-859$} \\
+    \% correct & \multicolumn{1}{c}{67} & \multicolumn{1}{c}{68} & \multicolumn{1}{c}{68} & \multicolumn{1}{c}{68} \\
+%%Akaike Inf. Crit. & \multicolumn{1}{c}{1,748.896} & \multicolumn{1}{c}{1,740.400} & \multicolumn{1}{c}{1,719.057} & \multicolumn{1}{c}{1,731.050} \\
+%%Bayesian Inf. Crit. &  &  &  & \multicolumn{1}{c}{1,778.632} \\
+    \\ [-1.8ex]
+    \hline \\[-1.8ex]
+    & \multicolumn{4}{r}{\footnotesize $^{*}$p$<$.1; $^{**}$p$<$.05; $^{***}$p$<$.01 (p-values in parentheses)} \\
+  \end{tabular}
+\end{table}
+\efloatseparator
+ 

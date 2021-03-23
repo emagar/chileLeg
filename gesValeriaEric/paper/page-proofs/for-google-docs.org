@@ -1,0 +1,57 @@
+Response to proof queries
+
+Q1. Au: Your article has been edited for grammar, clarity, consistency, and conformity to journal style. Please read the article to make sure that your meaning has been retained. Note that we may be unable to make revisions that conflict with journal style or create grammatical problems. Thank you.
+A1 --- Will do. 
+
+Q2. Au: Please provide edited collection page number (rather than federalist paper number) for quote.
+A2 --- the page for the quote in essay LXX is 426.
+
+Q3. Au: Replaced “the floor” with “legislators” here (“legislators bring the bill back to the floor”), to avoid “the floor . . . the floor” construct, OK?
+A3 --- Looks OK.
+ 
+Q4. Au: Please clarify meaning of parenthetical “see footnote” here. If this is your footnote, please specify its number; if it’s Alemán and Navia’s, then please either specify the number or revise the subsequent parenthetical citation from “404” to “404n” (if citing their note on p. 404).
+A4 --- It should say “(see n. 3)”.
+
+Q5. Au: The final sentence of this paragraph states that Congress “could rescind” fast-track authority, yet the timeline specified extends through 2007 only (2002 1 5). Is fast track still in place? If yes, please clarify timeline beyond 2007. If no, please modify tense of final sentence.
+A5 --- This should clarify: “Congress can conceivably rescind the authority it has granted prematurely, too.”
+
+Q6. Au: Footnote 6: Replaced parenthetical “see footnote” with “see n. 4,” assuming you wish to direct the reader to your footnote 4.
+A6 --- It should say “(see n. 4)”. 
+
+Q7. Au: Replaced Cámara de Diputados with Reglamento here for consistent treatment with the abridged title in footnote 3.
+A7 --- It should say “Of direct relevance, we coded all bills in the Cámara de Diputados that the president marked urgent.” 
+
+Q8. Au: Table 2: (1) Please define (i.e., spell out) UDI here at its only use. Also, (2) assumed “vacant seats dropped” applied to whole table, so it was moved into the table note, OK? If not, please clarify which data are affected. It was attached to 100 in the bottom row of the “1998–2002” column, yet the values above (50 and 50) sum to 100 (thus, presumably, none were dropped).
+A8 --- (1) Replace “UDI” with “Unión Demócrata Independiente”. (2) Replace “Vacant seats dropped” with “Vacant Senate seats in 1998-2002 dropped” (50 and 50 are post-drop percentages).  
+
+Q9. Au: Table 3: Omitted “standard errors in parentheses” because parenthetical values are defined in the table note and article body as p-values. Also, do you wish to retain both the asterisked significance footnotes and the parenthetical p-values since they present ostensibly redundant information?
+A9 --- (1) Drop p-values, this simplifies the table considerably while conveying the fundamental information. (2) Before doing so, however, add “**** p < .001” to the table’s footnote and add a fourth star to twenty-one coefficients reporting a p<.001 value. (3) And drop “p-values in parentheses” from table’s footnote. 
+
+Q10. Au: Is hypothesis 1 or hypothesis 2 the “main hypothesis”? Or should text be revised here to “We find support for our main hypotheses” (i.e., both/plural)?
+A10 --- Replace “We find support for our main hypothesis” with “We find support for our hypotheses”. 
+
+Q11. Au: Footnote 15: Replaced “referees” with “chairs” here (“multiple chairs may act sequentially”) to avoid conflation with your article referee also mentioned in this footnote.
+A11 --- Looks OK. 
+
+
+Additional comments/edits:
+
+pp 1-2: Replace "On average, we find that three of every five" with "We also find that, on average, three of every five". 
+
+
+p 2: For gender consistency, replace “the probability the president will use his fast-track authority” with “the probability the president will use her fast-track authority” 
+
+p 2: Replace 
+
+"on two fronts. First, the ability to bring bills to the fore for floor consideration allows the executive to prioritize legislative business. When a bill is denoted urgent, it takes the next place in line, and other bills get pushed back. Second, by setting a deadline, presidents can force legislators to decide on thorny issues that many legislators would have otherwise preferred to keep dormant"
+
+with 
+
+"on two fronts. One is the ability to prioritize legislative business by bringing bills to the fore for floor consideration. When the executive declares a bill urgent, it takes the next place in line, and other bills get pushed back. And, by setting a deadline, presidents can also
+force legislators to decide on thorny issues that many lawmakers would have otherwise preferred to keep dormant"
+
+p 3: Replace "But this is not the case: about 60%" with "Contrary to common sense, about 60%”
+
+p 5: In footnote 6, replace “House rules in Chile (see n. 4)” with “House rules (see n. 4)”. 
+
+EM: Me quedé en p 7 DATA AND ANALYSIS
